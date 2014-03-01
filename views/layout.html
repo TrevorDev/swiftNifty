@@ -71,6 +71,13 @@
                 $interpolateProvider.endSymbol(']]');
             });
     </script>
+
+    <script>
+      function showError(msg){
+        $("#errorDiv").show();
+        $("#errorMsg").html(msg);
+      }
+    </script>
     {% block script %}{% endblock %}
   </body>
 </html>

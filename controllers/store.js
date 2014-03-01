@@ -3,16 +3,28 @@ var sessionHelper = require('./../lib/sessionHelper');
 var User = require('./../models/user');
 var Store = require('./../models/store');
 var Product = require('./../models/product');
+var Purchase = require('./../models/purchase');
 
 
 exports.create = function *() {
 	try{
 		var params = yield parse(this);
-		console.log(params)
+		if(!params.name||!params.location||!params.slogan||!params.description||!params.products){
+			this.jsonResp(400,{message: "Please fill in all fields."})
+			return
+		}
+		for(var i in params.products){
+			if(!params.products[i].name){
+				this.jsonResp(400,{message: "Product "+(parseInt(i)+1)+" is missing a name"})
+				return
+			}
+			if(!params.products[i].price || isNaN(parseFloat(params.products[i].price)) ){
+				this.jsonResp(400,{message: "Product "+(parseInt(i)+1)+" has an invalid price"})
+				return
+			}
+		}
 		var currentUser = yield User.find(sessionHelper.getUserID(this.session))
 		var store = yield Store.create({name: params.name, location: params.location, slogan: params.slogan, description: params.description});
-		console.log(store)
-		console.log(currentUser)
 		yield currentUser.addStore(store)
 		for (var i in params.products){
 			var p = params.products[i]
@@ -20,12 +32,29 @@ exports.create = function *() {
 			var product = yield Product.create({name:p.name,description:p.description,price:price})
 			yield store.addProduct(product);
 		}
-		this.jsonResp(200,{message: "Success"})
+		this.jsonResp(200,{message: "Success", id: store.id})
 	} catch (err) {
 		console.log(err)
 		this.jsonResp(400,{message: "Store with that name already exists"})
 	}
 
+}
+
+exports.order = function *() {
+	try {
+		var params = yield parse(this)
+		var store = yield Store.find(this.params.id)
+		console.log(store)
+		var purchase = yield Purchase.create({customerTag:params.name,message:params.message,totalPrice:params.total,paid:params.payWhen=="now"?true:false})
+		store.addPurchase(purchase);
+		for(var i in params.orders){
+			//yield store.addProduct(yield )
+		}
+		console.log(params)
+	} catch (err) {
+		console.log(err)
+		this.jsonResp(400,{message: "Error occured"})
+	}
 }
 
 exports.get = function *() {

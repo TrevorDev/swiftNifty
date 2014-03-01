@@ -5,7 +5,7 @@
 	    		<div class="col-lg-9">
 	    			<h1>{{store.name}} - {{store.slogan}}</h1>
 	    			<h3><a href="http://www.yelp.ca/search?find_desc={{store.name|replace(' ', '+', 'g')}}&find_loc=Toronto%2C+ON&ns=1#find_loc={{store.location|replace(' ', '+', 'g')}}">Reviews</a></h3>
-	    			<h2>Map</h2>
+	    			<h2>Location {{store.location}}</h2>
 	    			<div style="height: 300px;width:100%" id="map-canvas"></div>
 	    			<h2>Description</h2>
 	    			<h4>{{store.description | escape |replace('\n', "<br>", 'g')|raw}}</h4>
@@ -15,7 +15,7 @@
 		    					<h4 class="col-sm-offset-1 col-sm-2">{{product.name}}</h4>
 		    					<h4 class="col-sm-5">{{product.description}}</h4>
 		    					<h4 class="col-sm-2">${{product.price.toFixed(2)}}</h4>
-		    					<h4 class="col-sm-2"><button ng-click="addOrder('{{product.name}}', {{product.price}})" style="width:100%"><i class="fa fa-plus"></i> Add to Order</button></h4>
+		    					<h4 class="col-sm-2"><button ng-click="addOrder({{product.id}}, '{{product.name}}', {{product.price}})" style="width:100%"><i class="fa fa-plus"></i> Add to Order</button></h4>
 		    			</div>
 		    					<div style="background-color:white;height:1px;width:100%;"></div>
 		    			{% endfor %}
@@ -50,20 +50,36 @@
 			    				</td>
 			    			</tr>
 	    			</table>
-	    			<button class="btn">Pay now</button>
-	    			<button class="btn">Pay at pickup</button>
+	    			<h4>Your name, email or phone</h4>
+	    			<div class="form-group">
+	    				<input ng-model="name" type="text" class="form-control" placeholder="eg. trevor@trevordev.com">
+	    			</div>
+	    			<h4>Add a message to order (optional)</h4>
+	    			<div class="form-group">
+	    			<textarea ng-model="orderMsg" class="form-control" rows="2"></textarea>
+	    			</div>
+	    			<div class="row">
+	    			<div class="col-lg-6">
+	    			<button class="btn" ng-click="placeOrder('now')"><i class="fa fa-shopping-cart"></i> Pay now</button>
+	    			</div>
+	    			<div class="col-lg-6">
+	    				<button class="btn" ng-click="placeOrder('later')"><i class="fa fa-shopping-cart"></i> Pay at pickup</button>
+	    			</div>
+	    			</div>
 	    		</div>
 	    	</div>
 			</div>
 {% endblock %}
 
 {% block script %}
-
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5jK4WtJObHJwEB0b6efS7FMlXiQxXv1Y&sensor=false"></script>
 <script type="text/javascript">
 function OrderCtrl($scope, $http) {
 			  $scope.orders = [];
-		    $scope.addOrder = function(name, price){
-		    	$scope.orders.push({name:name, price:price.toFixed(2)});
+			  $scope.orderMsg = "";
+			  $scope.name = "";
+		    $scope.addOrder = function(pID, name, price){
+		    	$scope.orders.push({id: pID, name:name, price:price.toFixed(2)});
 		    }
 		    $scope.rmvOrder = function(i){
 		    	console.log($scope.products[i])
@@ -76,12 +92,11 @@ function OrderCtrl($scope, $http) {
 		    	}
 		    	return total.toFixed(2);
 		    }
-		    $scope.submit = function(){
-					console.log($scope);
+		    $scope.placeOrder = function(type){
 					$http({
-					    url: "api/store",
+					    url: "/api/store/{{store.id}}/order",
 					    method: "POST",
-					    data: {name:$scope.name,slogan:$scope.slogan,description:$scope.description,location:$scope.location,products:$scope.products}
+					    data: {name:$scope.name,orders:$scope.orders,message:$scope.orderMsg,total:$scope.total(),payWhen: type}
 					}).success(function(data, status, headers, config) {
 					    $scope.data = data;
 					}).error(function(data, status, headers, config) {
@@ -89,13 +104,8 @@ function OrderCtrl($scope, $http) {
 					});
 				return false;
 				}
-			}
-</script>
 
-
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5jK4WtJObHJwEB0b6efS7FMlXiQxXv1Y&sensor=false"></script>
-<script type="text/javascript">
-var mapOptions = {
+				var mapOptions = {
   //center: new google.maps.LatLng(-34.397, 150.644),
   zoom: 8
 };
@@ -110,9 +120,11 @@ geocoder.geocode( { "address": "{{store.location}}"}, function(results, status) 
         position: results[0].geometry.location
     });
   } else {
-    alert('Geocode was not successful for the following reason: ' + status);
+    //alert('Geocode was not successful for the following reason: ' + status);
+    $("#map-canvas").hide()
   }
 });
-
+			}
+			
 </script>
 {% endblock %}

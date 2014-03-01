@@ -39,7 +39,6 @@ var User = sequelize.define('User',
 	}
 )
 User.hasMany(Store)
-
 module.exports = User;
 
 //console.log(User.findAll())

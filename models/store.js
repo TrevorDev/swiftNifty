@@ -3,6 +3,7 @@ var Database = require('./../lib/database');
 var Sequelize = Database.getSequelize();
 var sequelize = Database.getSequelizeInstance();
 
+var Purchase = require("./purchase.js")
 var Product = require("./product.js")
 var Store = sequelize.define('Store', 
 	{
@@ -21,5 +22,8 @@ var Store = sequelize.define('Store',
 	  }
 	}
 )
+
 Store.hasMany(Product)
+Store.hasMany(Purchase)
+
 module.exports = Store;
