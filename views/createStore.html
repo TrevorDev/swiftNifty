@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+{% block body %}
+	<div>
+		<div class="container-wide">
+			<div class="row">
+    		<div class="col-lg-12">
+					<div ng-controller="StoreCtrl" class="form-horizontal">
+				    <h1>Create Your Store</h1>
+				    	<div class="form-group">
+						    <label class="col-sm-2 control-label">Name</label>
+						    <div class="col-sm-10">
+						      <input ng-model="name" type="text" class="form-control" placeholder="eg. Trevors Store">
+						    </div>
+						  </div>
+						  <div class="form-group">
+						    <label class="col-sm-2 control-label">Location</label>
+						    <div class="col-sm-10">
+						      <input ng-model="location" type="text" class="form-control" placeholder="eg. 123 king st, toronto, ontario (optional)">
+						    </div>
+						  </div>
+						  <div class="form-group">
+						  	<label class="col-sm-2 control-label">Slogan</label>
+						    <div class="col-sm-10">
+						      <input ng-model="slogan" type="text" class="form-control" placeholder="eg. best ever (optional)">
+						    </div>
+						  </div>
+						  <div class="form-group">
+						    <label for="inputPassword3" class="col-sm-2 control-label">Description</label>
+						    <div class="col-sm-10">
+						      <textarea ng-model="description" class="form-control" rows="4"></textarea>
+						    </div>
+						  </div>
+						  	<div class="form-group" ng-repeat="product in products">
+						  		<label for="inputPassword3" class="col-sm-2 control-label">Product #[[$index+1]]</label>
+						  		<div class="col-sm-3">
+								    <input name="productName" ng-model="product.name" type="text" class="form-control" placeholder="Name">
+								  </div>
+								  <div class="col-sm-5">
+								    <input name="productDescription" ng-model="product.description" type="text" class="form-control" placeholder="Description(optional)">
+								  </div>
+								  <div class="col-sm-1">
+								    <input name="productPrice" ng-model="product.price" type="text" class="form-control" placeholder="Price">
+								  </div>
+								  <div class="col-sm-1">
+								  	<button ng-click="rmvProduct($index)" style="width:100%"><i style="font-size:2.0em" class="fa fa-times"></i></button>
+								  </div>
+						  	</div>
+						  	<div class="form-group">
+						  	<div class="col-sm-offset-2 col-sm-10 text-right">
+						      <button class="btn btn-default" style="width:100%" ng-click="addProduct()">Add another product</button>
+						    </div>
+						  </div>
+						  
+						  <div class="form-group">
+						    <div class="col-sm-12 text-right">
+						      <button ng-click="submit()" class="btn btn-default">Create</button>
+						    </div>
+						  </div>
+						  <div style="centered">
+					    	<p style="text-align:right;" style="font-size:1em;">By clicking create you agree to the terms specified in our <a href="/faq" target="_blank">Pricing / FAQ page</a></p>
+					    </div>
+					</div>
+				</div>
+	  	</div>
+  	</div> 
+	</div>
+{% endblock %}
+{% block script %}
+<script>
+			function StoreCtrl($scope, $http) {
+				$scope.name = ''
+				$scope.location = ''
+				$scope.slogan = ''
+				$scope.description = ''
+
+			  $scope.products = [
+			    {name:'', description: "", price:""}];
+		    $scope.addProduct = function(){
+		    	$scope.products.push({name:'', description: "", price:""});
+		    }
+		    $scope.rmvProduct = function(i){
+		    	console.log($scope.products[i])
+		    	$scope.products.splice(i,1);
+		    }
+		    $scope.submit = function(){
+					console.log($scope);
+					$http({
+					    url: "api/store",
+					    method: "POST",
+					    data: {name:$scope.name,slogan:$scope.slogan,description:$scope.description,location:$scope.location,products:$scope.products}
+					}).success(function(data, status, headers, config) {
+					    $scope.data = data;
+					}).error(function(data, status, headers, config) {
+					    $scope.status = status;
+					});
+				return false;
+				}
+			}
+     
+</script>
+{% endblock %}

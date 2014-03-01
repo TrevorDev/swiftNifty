@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% block body %}
+	    <div class="container-wide">
+	    	<div class="row">
+	    		<div class="col-lg-8 col-lg-offset-2">
+	    			<h1>{{store.type}}: {{store.title}}</h1>
+
+	    			{% if store.price == '0' %}
+	    				<div class="alert alert-success" style="margin-bottom: 15px; cursor: default;"> This store is free! Download files below.</div>
+	    			{% elseif owned %}
+	    				<div class="alert alert-success" style="margin-bottom: 15px; cursor: default;"> You own {{store.title}}! Download files below.</div>
+	    			{% elseif email %}
+	    				<div class="btn-green" id="buyButton" style="margin-bottom: 15px"><i class="fa fa-shopping-cart"></i> ${{store.price}} Get It Now!</div>
+	    			{% else %}
+	    				<a href="/login?redirect={{('/store/'+store.id) | url_encode }}&message={{ "Please login or signup to purchase" | url_encode }}"><div class="btn-green" style="margin-bottom: 15px"><i class="fa fa-shopping-cart"></i> ${{store.price}} Get It Now!</div></a>
+	    			{% endif %}
+
+					  
+
+	    			<br>
+	    			<img src="/api/store/{{store.id}}/image" style="height:300px">
+	    			<h2>Info</h2>
+	    			<h4>{{store.name}}</h4>
+	    			<h2>Description</h2>
+	    			<h4>{{store.description | escape |replace('\n', "<br>", 'g')|raw}}</h4>
+
+	    			<h2>Files: </h2>
+	    			{% for file in files %}
+	    				<li>
+	    					{% if store.price == '0' || owned %}
+	    						<a href="/api/file/{{file.id}}/download"><div class="btn-green" style="padding: 2px;margin:5px;">Download Now</div></a>
+	    					{% endif %}
+	    					{{file.name}}
+	    				</li>
+	    			{% endfor %}
+	    		</div><!-- /col-lg-8 -->
+	    	</div><!-- /row -->
+			</div><!-- /hello -->
+{% endblock %}
+
+{% block script %}
+<script src="https://checkout.stripe.com/checkout.js"></script>
+<script>
+  var handler = StripeCheckout.configure({
+    key: '{{public_stripe_api_key}}',
+    email: '{{email}}',
+    //image: '/square-image.png',
+    token: function(token, args) {
+      $.ajax({
+		     type: "POST",
+		     url: "/api/store/{{store.id}}/purchase",
+		     data: {token: token}, 
+		     success: function(data)
+		     {
+		        location.reload(true);
+		     },
+		     error: function(XMLHttpRequest, textStatus, errorThrown) {
+		     		var errMsg = $.parseJSON(XMLHttpRequest.responseText).data.message
+		     		console.log(errMsg)
+		     } 
+	  	 });
+    }
+  });
+
+  document.getElementById('buyButton').addEventListener('click', function(e) {
+    // Open Checkout with further options
+    handler.open({
+      name: 'Nifty Kick',
+      description: '{{store.title}} (${{store.price}})',
+      amount: {{store.price*100}}
+    });
+    e.preventDefault();
+  });
+</script>
+{% endblock %}
