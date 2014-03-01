@@ -97,5 +97,5 @@ function *faq() {
 //sequelize.sync({ force: true });
 
 
-app.listen(3005);
+app.listen(3007);
 console.log('Started ----------------------------------------------');
