@@ -73,7 +73,8 @@ function *dashboard() {
 		temp.stores = yield currentUser.getStores()
 		this.body = yield render('dashboard', temp);
 	}else{
-		this.redirect('/login');
+		var redirectUrl = "/login?redirect="+encodeURIComponent('/dashboard')+"&message="+encodeURIComponent("You must login and have a store to use the dashboard")
+		this.redirect(redirectUrl);
 	}
 }
 
@@ -99,7 +100,8 @@ function *create() {
 	if(sessionHelper.isLoggedIn(this.session)){
 		this.body = yield render('createStore', sessionHelper.commonTemplate(this.session));
 	}else{
-		this.redirect('/login');
+		var redirectUrl = "/login?redirect="+encodeURIComponent('/createStore')+"&message="+encodeURIComponent("You must login to create a store")
+		this.redirect(redirectUrl);
 	}
 }
 

@@ -2,7 +2,12 @@
 {% block body %}
 	    <div class="container-wide">
 	    	<div class="row">
-	    			<h2>Choose a store to view dashboard<h2>
+	    			
+	    			{% if (stores.length<1) %}
+	    				<h2>Please create a store to use the dashboard<h2>
+	    			{% else %}
+							<h2>Choose a store to view<h2>
+	    			{% endif %}
 	    			{% for store in stores %}
 	    				<a href="/dashboard/{{store.id}}">
 		    			<div class="col-lg-2">
