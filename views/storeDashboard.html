@@ -34,7 +34,7 @@
 {% block script %}
 <script src="/socket.io/socket.io.js"></script>
 <script>
-var socket = io.connect('/');
+var socket = io.connect('/', {'force new connection': true});
 
 socket.on("disconnect", function(){
 	console.log("DC")
