@@ -102,10 +102,15 @@ a:after {
 	font-size: 60px;
 	padding-top: 0px;
 	padding-bottom: 0px;
-	@media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
-	   font-size: 20px;
-	};
 }
+
+@media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
+	   .navbar-brand {
+				font-size: 30px;
+				padding-top: 10px;
+				padding-bottom: 0px;
+			}
+};
 
 .btn-theme {
 	color: #ffffff;
@@ -221,3 +226,24 @@ a:after {
 .grid img:hover {
     opacity: 1;
 }
+
+
+@media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
+	   #hello {
+				width: 100%;
+				padding-top: 100px;
+				padding-bottom: 100px;
+			}
+
+			#hello h1 {
+				font-size: 30px;
+				font-weight: 700;
+				letter-spacing: 3px;
+				color: white;
+			}
+
+			#hello h2 {
+				color: #c0c0c0;
+				font-weight: 400;
+			}
+};

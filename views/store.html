@@ -12,10 +12,10 @@
 	    			<h2>Products: </h2>
 						  {% for product in products %}
 						  <div class="row">
-		    					<h4 class="col-sm-offset-1 col-sm-2">{{product.name}}</h4>
-		    					<h4 class="col-sm-5">{{product.description}}</h4>
-		    					<h4 class="col-sm-2">${{product.price.toFixed(2)}}</h4>
-		    					<h4 class="col-sm-2"><button ng-click="addOrder({{product.id}}, '{{product.name}}', {{product.price}})" style="width:100%"><i class="fa fa-plus"></i> Add to Order</button></h4>
+		    					<h4 class="col-sm-offset-1 col-sm-2" style="margin-top: 30px;">{{product.name}}</h4>
+		    					<h4 class="col-sm-5" style="margin-top: 30px;">{{product.description}}</h4>
+		    					<h4 class="col-sm-2" style="margin-top: 30px;">${{product.price.toFixed(2)}}</h4>
+		    					<h4 class="col-sm-2"><button class="btn" ng-click="addOrder({{product.id}}, '{{product.name}}', {{product.price}})" style="width:100%"><i class="fa fa-plus"></i> Add to Order</button></h4>
 		    			</div>
 		    					<div style="background-color:white;height:1px;width:100%;"></div>
 		    			{% endfor %}
