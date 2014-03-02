@@ -56,6 +56,9 @@
 						      <button ng-click="submit()" ng-disabled="requesting" class="btn btn-default">Create</button>
 						    </div>
 						  </div>
+						  <div ng-show="requesting" class="row centered">
+		    				<i class="fa fa-spinner fa-spin fa-3x"></i>
+		    			</div>
 						  <div style="centered">
 					    	<p style="text-align:right;" style="font-size:1em;">By clicking create you agree to the terms specified in our <a href="/faq" target="_blank">Pricing / FAQ page</a></p>
 					    </div>

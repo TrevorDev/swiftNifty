@@ -60,11 +60,14 @@
 	    			</div>
 	    			<div class="row centered">
 	    			<div class="col-sm-6" style="padding-bottom:10px">
-	    			<button class="btn" style="width:193px" ng-disabled="requesting" ng-click="payWithStripe()"><i class="fa fa-money"></i> Pay now</button>
+	    				<button class="btn" style="width:193px" ng-disabled="requesting" ng-click="payWithStripe()"><i class="fa fa-money"></i> Pay now</button>
 	    			</div>
 	    			<div class="col-sm-6">
-	    				<button class="btn" style="width:193px" ng-disabled="requesting" ng-click="placeOrder()"><i class="fa fa-shopping-cart"></i> Pay in store</button>
+	    				<button class="btn" style="width:193px;padding-bottom:10px" ng-disabled="requesting" ng-click="placeOrder()"><i class="fa fa-shopping-cart"></i> Pay in store</button>
 	    			</div>
+	    			</div>
+	    			<div ng-show="requesting" class="row centered">
+	    				<i class="fa fa-spinner fa-spin fa-3x"></i>
 	    			</div>
 	    		</div>
 	    	</div>
