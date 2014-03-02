@@ -7,6 +7,8 @@ var Product = require('./../models/product');
 var Purchase = require('./../models/purchase');
 var OrderItem = require('./../models/orderItem');
 
+var payment = require('./../lib/payment');
+
 
 exports.create = function *() {
 	try{
@@ -45,9 +47,23 @@ exports.create = function *() {
 exports.order = function *() {
 	try {
 		var params = yield parse(this)
+
+		if(!params.name){
+			this.jsonResp(400,{message: "Name field is missing"})
+			return;
+		}
+
+		if(!params.orders||params.orders.length<1){
+			this.jsonResp(400,{message: "You need to add products to place an order"})
+			return;
+		}
+
 		var store = yield Store.find(this.params.id)
 		//console.log(store)
-		var purchase = yield Purchase.create({customerTag:params.name,message:params.message,totalPrice:params.total,paid:params.payWhen=="now"?true:false})
+		var purchase = yield Purchase.create({customerTag:params.name,message:params.message,totalPrice:params.total,paid: params.token?true:false})
+		
+		yield payment.charge(params.token.id, params.total*100)
+
 		yield store.addPurchase(purchase);
 
 		for(var i in params.orders){
@@ -62,7 +78,7 @@ exports.order = function *() {
 		this.jsonResp(200,{message: "Success", id: purchase.id})
 	} catch (err) {
 		console.log(err)
-		this.jsonResp(400,{message: "Error occured"})
+		this.jsonResp(400,{message: "Error occured, order has not gone through"})
 	}
 }
 

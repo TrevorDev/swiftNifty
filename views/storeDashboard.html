@@ -41,6 +41,7 @@ this.socket.on("disconnect", function(){
 })
 
 this.socket.on('connect', function () {
+	console.log("reconnect")
     socket.emit('joinStore', { storeID: {{store.id}} });
 })
 

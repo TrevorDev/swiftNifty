@@ -113,6 +113,7 @@ function *showStore() {
 	var temp = sessionHelper.commonTemplate(this.session);
 	temp.store = yield Store.find(this.params.id, {include: [Product]});
 	temp.products = yield temp.store.getProducts();
+	temp.public_stripe_api_key = config.public_stripe_api_key
 	this.body = yield render('store', temp);
 }
 

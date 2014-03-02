@@ -60,10 +60,10 @@
 	    			</div>
 	    			<div class="row">
 	    			<div class="col-lg-6">
-	    			<button class="btn" ng-disabled="requesting" ng-click="placeOrder('now')"><i class="fa fa-shopping-cart"></i> Pay now</button>
+	    			<button class="btn" ng-disabled="requesting" ng-click="payWithStripe()"><i class="fa fa-shopping-cart"></i> Pay now</button>
 	    			</div>
 	    			<div class="col-lg-6">
-	    				<button class="btn" ng-disabled="requesting" ng-click="placeOrder('later')"><i class="fa fa-shopping-cart"></i> Pay at pickup</button>
+	    				<button class="btn" ng-disabled="requesting" ng-click="placeOrder()"><i class="fa fa-shopping-cart"></i> Pay at pickup</button>
 	    			</div>
 	    			</div>
 	    		</div>
@@ -72,9 +72,12 @@
 {% endblock %}
 
 {% block script %}
+<script src="https://checkout.stripe.com/checkout.js"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5jK4WtJObHJwEB0b6efS7FMlXiQxXv1Y&sensor=false"></script>
 <script type="text/javascript">
+
 function OrderCtrl($scope, $http) {
+
 				$scope.requesting = false;
 			  $scope.orders = [];
 			  $scope.orderMsg = "";
@@ -93,12 +96,12 @@ function OrderCtrl($scope, $http) {
 		    	}
 		    	return total.toFixed(2);
 		    }
-		    $scope.placeOrder = function(type){
+		    $scope.placeOrder = function(token){
 		    	$scope.requesting = true;
 					$http({
 					    url: "/api/store/{{store.id}}/order",
 					    method: "POST",
-					    data: {name:$scope.name,orders:$scope.orders,message:$scope.orderMsg,total:$scope.total(),payWhen: type}
+					    data: {name:$scope.name,orders:$scope.orders,message:$scope.orderMsg,total:$scope.total(), token:token}
 					}).success(function(data, status, headers, config) {
 					    window.location.replace("/thanks");
 					}).error(function(data, status, headers, config) {
@@ -112,6 +115,30 @@ function OrderCtrl($scope, $http) {
 				return false;
 				}
 
+				$scope.payWithStripe = function(){
+					if($scope.orders.length < 1){
+						showError("You must add products to place an order")
+					}else if(!$scope.name){
+						showError("You must enter your name, email or phone number to place an order")
+					}else{
+						stripeHandler.open({
+				      name: 'SwiftNifty',
+				      description: "{{store.name|escape('js')}} $"+$scope.total()+" Order",
+				      amount: parseInt(parseFloat($scope.total())*100)
+				    });
+					}
+				}
+
+
+//STRIPE-------------------------------------------
+var stripeHandler = StripeCheckout.configure({
+  key: '{{public_stripe_api_key}}',
+  //image: '/square-image.png',
+  token: function(token, args) {
+    $scope.placeOrder(token);
+  }
+});
+//MAPS----------------------------------------------
 				var mapOptions = {
   //center: new google.maps.LatLng(-34.397, 150.644),
   zoom: 8
