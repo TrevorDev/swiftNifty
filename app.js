@@ -1,7 +1,9 @@
 var render = require('./lib/render');
+var http = require('http');
 var config = require('./lib/config');
 var sessionHelper = require('./lib/sessionHelper');
 var jsonResp = require('./lib/jsonResp');
+var socketMaster = require('./lib/socketMaster');
 var logger = require('koa-logger');
 var router = require('koa-router');
 var serve = require('koa-static');
@@ -23,7 +25,6 @@ var Product  = require('./models/product');
 var Purchase  = require('./models/purchase');
 var User  = require('./models/user');
 var OrderItem  = require('./models/orderItem');
-
 
 //REMOVE IN PRODUCTION??
 swig.setDefaults({ cache: false })
@@ -76,10 +77,10 @@ function *storeDashboard() {
 		var store = yield Store.find(this.params.id)
 		if(store.UserId == sessionHelper.getUserID(this.session)){
 			var temp = sessionHelper.commonTemplate(this.session);
-			temp.purchases = yield store.getPurchases({include: [{model:OrderItem, include: Product}]})
-			// console.log(temp.purchases[0].orderItems[0].product)
-			// var items = yield temp.purchases[0].getOrderItems()
-			//console.log(yield items[0].getProduct())
+			temp.purchases = yield store.getPurchases({order: 'createdAt DESC', include: [{model:OrderItem, include: Product}]})
+			temp.store = store;
+			console.log(temp.purchases[0].createdAt)
+
 			this.body = yield render('storeDashboard', temp);
 		}else{
 			this.redirect('/');
@@ -132,5 +133,9 @@ function *faq() {
 //sequelize.sync({ force: true });
 
 
-app.listen(3007);
+//app.listen(3007);
+var server = http.createServer(app.callback());
+server.listen(3007);
+socketMaster.init(server);
+
 console.log('Started ----------------------------------------------');

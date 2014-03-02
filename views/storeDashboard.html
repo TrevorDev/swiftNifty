@@ -1,25 +1,46 @@
 {% extends 'layout.html' %}
 {% block body %}
 	    <div class="container-wide">
-	    	<div class="row">
-	    			<h2>Recent Purchases<h2>
+	    	<div>
+	    			<h2>LIVE UPDATING: Recent Orders<h2>
 	    			{% for purchase in purchases %}
-	    				<a href="/dashboard/{{store.id}}">
 		    			<div>
 		    				<div class="well" style="">
-		    				<div class="">
-			    				<h2 style="color:#111111">Customer: {{purchase.customerTag}}</h2>
-			    				<h2 style="color:#111111">Message: {{purchase.message}}</h2>
-			    				<h2 style="color:#111111">Paid: {{purchase.paid}}</h2>
-			    				<h2 style="color:#111111">Order:</h2>
-			    				{% for item in purchase.orderItems %}
-			    					<h4 style="color:#111111">{{item.product.name}}</h4>
-			    				{% endfor %}
-			    			</div>
+									<div class="row">
+										<div class="col-lg-3">
+											<h5 style="color:#111111">Customer: {{purchase.customerTag}}</h5>
+											<h5 style="color:#111111">Total: ${{purchase.totalPrice.toFixed(2)}}</h5>
+			    				<h5 style="color:#111111">Paid: {{purchase.paid}}</h5>
+										</div>
+										<div class="col-lg-3">
+											<h5 style="color:#111111">Ordered At: <p style="font-size:0.8em">{{purchase.createdAt.toString()}}<p></h5>
+										</div>
+										<div class="col-lg-3">
+											<h5 style="color:#111111">Message: {{purchase.message}}</h5>
+										</div>
+										<div class="col-lg-3">
+											<h5 style="color:#111111">Order:</h5>
+					    				{% for item in purchase.orderItems %}
+					    					<h4 style="color:#111111">{{item.product.name}}: ${{item.product.price.toFixed(2)}}</h4>
+					    				{% endfor %}
+				    				</div>
+			    				</div>
 			    			</div>
 		    			</div>
-		    			</a>
 						{% endfor %}
 	    	</div><!-- /row -->
 			</div><!-- /hello -->
+{% endblock %}
+{% block script %}
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io.connect('/');
+
+socket.emit('joinStore', { storeID: {{store.id}} });
+
+socket.on('purchase', function (data) {
+	location.reload(true);
+	console.log(data)
+});
+</script>
 {% endblock %}

@@ -31,6 +31,7 @@
 		"koa-send": "x.x",
 		"stripe": "x.x",
 		"bluebird": "x.x",
+		"socket.io":"x.x",
 		"q": "x.x"
 	}
 }

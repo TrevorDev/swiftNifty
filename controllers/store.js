@@ -1,5 +1,6 @@
 var parse = require('co-body');
 var sessionHelper = require('./../lib/sessionHelper');
+var socketMaster = require('./../lib/socketMaster');
 var User = require('./../models/user');
 var Store = require('./../models/store');
 var Product = require('./../models/product');
@@ -55,6 +56,8 @@ exports.order = function *() {
 			yield product.addOrderItem(orderItem)
 			yield purchase.addOrderItem(orderItem)
 		}
+		var io = socketMaster.getIO();
+		io.sockets.in(store.id).emit('purchase', {test: 1});
 		console.log(params)
 	} catch (err) {
 		console.log(err)
