@@ -62,7 +62,9 @@ exports.order = function *() {
 		//console.log(store)
 		var purchase = yield Purchase.create({customerTag:params.name,message:params.message,totalPrice:params.total,paid: params.token?true:false})
 		
-		yield payment.charge(params.token.id, params.total*100)
+		if(params.token){
+			yield payment.charge(params.token.id, params.total*100)
+		}
 
 		yield store.addPurchase(purchase);
 
