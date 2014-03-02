@@ -46,7 +46,7 @@ exports.order = function *() {
 	try {
 		var params = yield parse(this)
 		var store = yield Store.find(this.params.id)
-		console.log(store)
+		//console.log(store)
 		var purchase = yield Purchase.create({customerTag:params.name,message:params.message,totalPrice:params.total,paid:params.payWhen=="now"?true:false})
 		yield store.addPurchase(purchase);
 
@@ -58,7 +58,8 @@ exports.order = function *() {
 		}
 		var io = socketMaster.getIO();
 		io.sockets.in(store.id).emit('purchase', {test: 1});
-		console.log(params)
+		//console.log(params)
+		this.jsonResp(200,{message: "Success", id: purchase.id})
 	} catch (err) {
 		console.log(err)
 		this.jsonResp(400,{message: "Error occured"})

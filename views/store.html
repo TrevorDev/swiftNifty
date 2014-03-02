@@ -60,10 +60,10 @@
 	    			</div>
 	    			<div class="row">
 	    			<div class="col-lg-6">
-	    			<button class="btn" ng-click="placeOrder('now')"><i class="fa fa-shopping-cart"></i> Pay now</button>
+	    			<button class="btn" ng-disabled="requesting" ng-click="placeOrder('now')"><i class="fa fa-shopping-cart"></i> Pay now</button>
 	    			</div>
 	    			<div class="col-lg-6">
-	    				<button class="btn" ng-click="placeOrder('later')"><i class="fa fa-shopping-cart"></i> Pay at pickup</button>
+	    				<button class="btn" ng-disabled="requesting" ng-click="placeOrder('later')"><i class="fa fa-shopping-cart"></i> Pay at pickup</button>
 	    			</div>
 	    			</div>
 	    		</div>
@@ -100,10 +100,14 @@ function OrderCtrl($scope, $http) {
 					    method: "POST",
 					    data: {name:$scope.name,orders:$scope.orders,message:$scope.orderMsg,total:$scope.total(),payWhen: type}
 					}).success(function(data, status, headers, config) {
-					    $scope.data = data;
+					    window.location.replace("/thanks");
 					}).error(function(data, status, headers, config) {
 							$scope.requesting = false;
-					    $scope.status = status;
+					    if(data && data.data && data.data.message){
+								showError(data.data.message)
+							}else{
+								showError("Invalid input")
+							}
 					});
 				return false;
 				}

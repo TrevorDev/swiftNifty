@@ -43,6 +43,7 @@ app.get('/createStore', create);
 app.get('/browse', browse);
 app.get('/store/:id', showStore);
 app.get('/faq', faq);
+app.get('/thanks', thanks);
 app.get('/dashboard', dashboard);
 app.get('/dashboard/:id', storeDashboard);
 app.get('/public/*', serve('.'));
@@ -58,6 +59,10 @@ app.get('/api/store', store.get);
 //PAGE HANDLERS
 function *index() {
 	this.body = yield render('index', sessionHelper.commonTemplate(this.session));
+}
+
+function *thanks() {
+	this.body = yield render('thankYou', sessionHelper.commonTemplate(this.session));
 }
 
 function *dashboard() {
