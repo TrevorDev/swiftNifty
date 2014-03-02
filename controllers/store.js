@@ -22,7 +22,7 @@ exports.create = function *() {
 				this.jsonResp(400,{message: "Product "+(parseInt(i)+1)+" is missing a name"})
 				return
 			}
-			if(!params.products[i].price || isNaN(parseFloat(params.products[i].price)) ){
+			if(!params.products[i].price || isNaN(parseFloat(params.products[i].price.replace(/\$/g,"")))){
 				this.jsonResp(400,{message: "Product "+(parseInt(i)+1)+" has an invalid price"})
 				return
 			}
@@ -32,7 +32,7 @@ exports.create = function *() {
 		yield currentUser.addStore(store)
 		for (var i in params.products){
 			var p = params.products[i]
-			var price = parseFloat(p.price.replace(/\$/g,"2"))
+			var price = parseFloat(p.price.replace(/\$/g,""))
 			var product = yield Product.create({name:p.name,description:p.description,price:price})
 			yield store.addProduct(product);
 		}
@@ -63,7 +63,7 @@ exports.order = function *() {
 		var purchase = yield Purchase.create({customerTag:params.name,message:params.message,totalPrice:params.total,paid: params.token?true:false})
 		
 		if(params.token){
-			yield payment.charge(params.token.id, params.total*100)
+			yield payment.charge(params.token.id, Math.round(params.total*100))
 		}
 
 		yield store.addPurchase(purchase);
