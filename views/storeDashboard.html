@@ -35,8 +35,8 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 $(document).ready(function(){
+	var connected = false;
 	var socket = io.connect('/');
-	socket.emit('joinStore', { storeID: {{store.id}} });
 	socket.on("disconnect", function(){
 		console.log("DC")
 	})
@@ -47,6 +47,7 @@ $(document).ready(function(){
 
 	socket.on('madeConn', function () {
 		console.log("joining")
+		connected=true;
 	    socket.emit('joinStore', { storeID: {{store.id}} });
 	})
 
@@ -59,6 +60,13 @@ $(document).ready(function(){
 		location.reload(true);
 		console.log(data)
 	});
+
+	setTimeout(function(){
+		console.log("connect check")
+		if(!connected){
+			location.reload(true);
+		}
+	},5000);
 })
 </script>
 {% endblock %}
