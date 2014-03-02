@@ -44,6 +44,7 @@ app.get('/browse', browse);
 app.get('/store/:id', showStore);
 app.get('/faq', faq);
 app.get('/thanks', thanks);
+app.get('/howThisWorks', howThisWorks);
 app.get('/dashboard', dashboard);
 app.get('/dashboard/:id', storeDashboard);
 app.get('/public/*', serve('.'));
@@ -63,6 +64,10 @@ function *index() {
 
 function *thanks() {
 	this.body = yield render('thankYou', sessionHelper.commonTemplate(this.session));
+}
+
+function *howThisWorks() {
+	this.body = yield render('howThisWorks', sessionHelper.commonTemplate(this.session));
 }
 
 function *dashboard() {
@@ -85,7 +90,7 @@ function *storeDashboard() {
 			var temp = sessionHelper.commonTemplate(this.session);
 			temp.purchases = yield store.getPurchases({order: 'createdAt DESC', include: [{model:OrderItem, include: Product}]})
 			temp.store = store;
-			console.log(temp.purchases[0].createdAt)
+			//console.log(temp.purchases[0].createdAt)
 
 			this.body = yield render('storeDashboard', temp);
 		}else{
