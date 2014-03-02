@@ -45,6 +45,11 @@ $(document).ready(function(){
 	    socket = io.connect('/', {'force new connection': true});
 	});
 
+	socket.on('madeConn', function () {
+		console.log("joining")
+	    socket.emit('joinStore', { storeID: {{store.id}} });
+	})
+
 	socket.on('connect', function () {
 		console.log("reconnect")
 	    socket.emit('joinStore', { storeID: {{store.id}} });
