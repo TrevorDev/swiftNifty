@@ -53,7 +53,7 @@
 						  
 						  <div class="form-group">
 						    <div class="col-sm-12 text-right">
-						      <button ng-click="submit()" class="btn btn-default">Create</button>
+						      <button ng-click="submit()" ng-disabled="requesting" class="btn btn-default">Create</button>
 						    </div>
 						  </div>
 						  <div style="centered">
@@ -68,6 +68,7 @@
 {% block script %}
 <script>
 			function StoreCtrl($scope, $http) {
+				$scope.requesting = false;
 				$scope.name = ''
 				$scope.location = ''
 				$scope.slogan = ''
@@ -84,6 +85,7 @@
 		    }
 		    $scope.submit = function(){
 					console.log($scope);
+					$scope.requesting=true;
 					$http({
 					    url: "api/store",
 					    method: "POST",
@@ -92,6 +94,7 @@
 					    console.log(data)
 					    window.location.replace("/store/"+data.data.id);
 					}).error(function(data, status, headers, config) {
+							$scope.requesting=false;
 							if(data && data.data && data.data.message){
 								showError(data.data.message)
 							}else{

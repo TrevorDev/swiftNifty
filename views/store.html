@@ -75,6 +75,7 @@
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5jK4WtJObHJwEB0b6efS7FMlXiQxXv1Y&sensor=false"></script>
 <script type="text/javascript">
 function OrderCtrl($scope, $http) {
+				$scope.requesting = false;
 			  $scope.orders = [];
 			  $scope.orderMsg = "";
 			  $scope.name = "";
@@ -93,6 +94,7 @@ function OrderCtrl($scope, $http) {
 		    	return total.toFixed(2);
 		    }
 		    $scope.placeOrder = function(type){
+		    	$scope.requesting = true;
 					$http({
 					    url: "/api/store/{{store.id}}/order",
 					    method: "POST",
@@ -100,6 +102,7 @@ function OrderCtrl($scope, $http) {
 					}).success(function(data, status, headers, config) {
 					    $scope.data = data;
 					}).error(function(data, status, headers, config) {
+							$scope.requesting = false;
 					    $scope.status = status;
 					});
 				return false;

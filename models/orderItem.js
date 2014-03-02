@@ -4,15 +4,10 @@ var Sequelize = Database.getSequelize();
 var sequelize = Database.getSequelizeInstance();
 
 var Purchase = require("./purchase.js")
-var OrderItem = require("./orderItem.js")
 
-var Product = sequelize.define('Product', 
+
+var OrderItem = sequelize.define('OrderItem', 
 	{
-	  name: {
-	  	type:Sequelize.STRING
-	  },
-	  description: Sequelize.TEXT,
-	  price: Sequelize.FLOAT
 	}, {
 		classMethods: {
     	
@@ -22,6 +17,4 @@ var Product = sequelize.define('Product',
 	}
 )
 
-Product.hasMany(OrderItem);
-OrderItem.belongsTo(Product)
-module.exports = Product;
+module.exports = OrderItem;

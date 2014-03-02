@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% block body %}
+	    <div class="container-wide">
+	    	<div class="row">
+	    			<h2>Recent Purchases<h2>
+	    			{% for purchase in purchases %}
+	    				<a href="/dashboard/{{store.id}}">
+		    			<div>
+		    				<div class="well" style="">
+		    				<div class="">
+			    				<h2 style="color:#111111">Customer: {{purchase.customerTag}}</h2>
+			    				<h2 style="color:#111111">Message: {{purchase.message}}</h2>
+			    				<h2 style="color:#111111">Paid: {{purchase.paid}}</h2>
+			    				<h2 style="color:#111111">Order:</h2>
+			    				{% for item in purchase.orderItems %}
+			    					<h4 style="color:#111111">{{item.product.name}}</h4>
+			    				{% endfor %}
+			    			</div>
+			    			</div>
+		    			</div>
+		    			</a>
+						{% endfor %}
+	    	</div><!-- /row -->
+			</div><!-- /hello -->
+{% endblock %}

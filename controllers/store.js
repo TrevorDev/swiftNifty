@@ -4,6 +4,7 @@ var User = require('./../models/user');
 var Store = require('./../models/store');
 var Product = require('./../models/product');
 var Purchase = require('./../models/purchase');
+var OrderItem = require('./../models/orderItem');
 
 
 exports.create = function *() {
@@ -46,9 +47,13 @@ exports.order = function *() {
 		var store = yield Store.find(this.params.id)
 		console.log(store)
 		var purchase = yield Purchase.create({customerTag:params.name,message:params.message,totalPrice:params.total,paid:params.payWhen=="now"?true:false})
-		store.addPurchase(purchase);
+		yield store.addPurchase(purchase);
+
 		for(var i in params.orders){
-			//yield store.addProduct(yield )
+			var orderItem = yield OrderItem.create({})
+			var product = yield Product.find(params.orders[i].id)
+			yield product.addOrderItem(orderItem)
+			yield purchase.addOrderItem(orderItem)
 		}
 		console.log(params)
 	} catch (err) {

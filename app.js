@@ -19,9 +19,10 @@ var store  = require('./controllers/store');
 
 //MODELS
 var Store  = require('./models/store');
-var Product  = require('./models/store');
-var Purchase  = require('./models/store');
-var User  = require('./models/store');
+var Product  = require('./models/product');
+var Purchase  = require('./models/purchase');
+var User  = require('./models/user');
+var OrderItem  = require('./models/orderItem');
 
 
 //REMOVE IN PRODUCTION??
@@ -41,6 +42,8 @@ app.get('/createStore', create);
 app.get('/browse', browse);
 app.get('/store/:id', showStore);
 app.get('/faq', faq);
+app.get('/dashboard', dashboard);
+app.get('/dashboard/:id', storeDashboard);
 app.get('/public/*', serve('.'));
 
 //API ROUTES
@@ -54,6 +57,36 @@ app.get('/api/store', store.get);
 //PAGE HANDLERS
 function *index() {
 	this.body = yield render('index', sessionHelper.commonTemplate(this.session));
+}
+
+function *dashboard() {
+	if(sessionHelper.isLoggedIn(this.session)){
+		var userID = sessionHelper.getUserID(this.session)
+		var currentUser = yield User.find(userID, {include: [Store]});
+		var temp = sessionHelper.commonTemplate(this.session);
+		temp.stores = yield currentUser.getStores()
+		this.body = yield render('dashboard', temp);
+	}else{
+		this.redirect('/login');
+	}
+}
+
+function *storeDashboard() {
+	if(sessionHelper.isLoggedIn(this.session)){
+		var store = yield Store.find(this.params.id)
+		if(store.UserId == sessionHelper.getUserID(this.session)){
+			var temp = sessionHelper.commonTemplate(this.session);
+			temp.purchases = yield store.getPurchases({include: [{model:OrderItem, include: Product}]})
+			// console.log(temp.purchases[0].orderItems[0].product)
+			// var items = yield temp.purchases[0].getOrderItems()
+			//console.log(yield items[0].getProduct())
+			this.body = yield render('storeDashboard', temp);
+		}else{
+			this.redirect('/');
+		}
+	}else{
+		this.redirect('/login');
+	}
 }
 
 function *create() {
