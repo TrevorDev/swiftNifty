@@ -35,14 +35,14 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 $(document).ready(function(){
-	var socket = io.connect('/', {'force new connection': true});
+	var socket = io.connect('/');
 	socket.emit('joinStore', { storeID: {{store.id}} });
 	socket.on("disconnect", function(){
 		console.log("DC")
 	})
 
 	socket.on('error', function() {
-	    socket = io.connect('/', {'force new connection': true});
+	    
 	});
 
 	socket.on('madeConn', function () {
